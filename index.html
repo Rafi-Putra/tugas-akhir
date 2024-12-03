@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Latihan DOM</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script defer src="https://use.fontawesome.com/releases/v5.8.1/js/all.js" integrity="sha384-g5uSoOSBd7KkhAMlnQILrecXvzst9TdC09/VM+pjDTCM+1il8RHz5fKANTFFb+gQ" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-light bg-light">
+            <a class="navbar-brand">Mini Ecommerce</a>
+            <form class="form-inline" id="formItem">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" id="keyword" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="searchItem">Search</button>
+            </form>
+            <button class="btn btn-primary" id="cart"><i class="fas fa-shopping-cart"></i> (0)</button>
+        </nav>
+
+        <div class="row">
+            <div class="row col-md-12 mt-2" id="listBarang"></div>
+        </div>
+        
+        <div class="row mt-5" id="cartItems">
+            <h3>Keranjang Belanja</h3>
+            <ul id="cartList" class="list-group"></ul>
+        </div>
+    </div>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <script>
+        const items = [
+            ['001', 'iphone 16 pro max', 20000000, 'HP dengan value tinggi', 'ip.jpg'],
+            ['002', 'Laptop Lenovo legion', 10000000, 'Laptop gaming untuk game berat', 'laptop.jpg'],
+            ['003', 'Mouse', 50000, 'Mouse murah', 'mouse.jpg'],
+            ['004', 'Keyboard mechanical', 300000, 'Mouse yang disukai banyak orang', 'key.jpg']
+        ];
+
+        let cart = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            renderItems();
+            updateCartCount();
+
+            // Event listener untuk form pencarian
+            document.getElementById('formItem').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const keyword = document.getElementById('keyword').value.toLowerCase();
+                filterItems(keyword);
+            });
+        });
+
+        // Menampilkan produk di halaman
+        function renderItems() {
+            const listBarang = document.getElementById('listBarang');
+            listBarang.innerHTML = ''; // Kosongkan daftar barang
+            items.forEach(item => {
+                const [id, name, price, description, image] = item;
+                const itemCard = `
+                    <div class="col-4 mt-2">
+                        <div class="card" style="width: 18rem;">
+                            <img src="${image}" class="card-img-top" height="200px" width="200px" alt="${name}">
+                            <div class="card-body">
+                                <h5 class="card-title">${name}</h5>
+                                <p class="card-text">${description}</p>
+                                <p class="card-text">Rp ${price}</p>
+                                <a href="#" class="btn btn-primary add-to-cart" data-id="${id}" data-name="${name}" data-price="${price}" data-description="${description}">Tambahkan ke keranjang</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                listBarang.innerHTML += itemCard;
+            });
+
+            // Menambahkan event listener untuk tombol "Tambah ke Keranjang"
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const item = {
+                        id: e.target.getAttribute('data-id'),
+                        name: e.target.getAttribute('data-name'),
+                        price: parseInt(e.target.getAttribute('data-price')),
+                        description: e.target.getAttribute('data-description')
+                    };
+                    addToCart(item);
+                });
+            });
+        }
+
+        // Filter item berdasarkan keyword pencarian
+        function filterItems(keyword) {
+            const filteredItems = items.filter(item => item[1].toLowerCase().includes(keyword));
+            renderFilteredItems(filteredItems);
+        }
+
+        // Render produk setelah difilter
+        function renderFilteredItems(filteredItems) {
+            const listBarang = document.getElementById('listBarang');
+            listBarang.innerHTML = ''; // Kosongkan daftar barang
+            filteredItems.forEach(item => {
+                const [id, name, price, description, image] = item;
+                const itemCard = `
+                    <div class="col-4 mt-2">
+                        <div class="card" style="width: 18rem;">
+                            <img src="${image}" class="card-img-top" height="200px" width="200px" alt="${name}">
+                            <div class="card-body">
+                                <h5 class="card-title">${name}</h5>
+                                <p class="card-text">${description}</p>
+                                <p class="card-text">Rp ${price}</p>
+                                <a href="#" class="btn btn-primary add-to-cart" data-id="${id}" data-name="${name}" data-price="${price}" data-description="${description}">Tambahkan ke keranjang</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                listBarang.innerHTML += itemCard;
+            });
+
+            // Event listener untuk tombol "Tambah ke Keranjang"
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const item = {
+                        id: e.target.getAttribute('data-id'),
+                        name: e.target.getAttribute('data-name'),
+                        price: parseInt(e.target.getAttribute('data-price')),
+                        description: e.target.getAttribute('data-description')
+                    };
+                    addToCart(item);
+                });
+            });
+        }
+
+        // Menambahkan item ke dalam keranjang
+        function addToCart(item) {
+            cart.push(item);
+            renderCart();
+            updateCartCount();
+        }
+
+        // Menampilkan keranjang belanja
+        function renderCart() {
+            const cartList = document.getElementById('cartList');
+            cartList.innerHTML = ''; // Kosongkan list keranjang
+            cart.forEach((item, index) => {
+                const cartItem = `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        ${item.name} - Rp ${item.price}
+                        <button class="btn btn-danger btn-sm remove-item" data-index="${index}">Hapus</button>
+                    </li>
+                `;
+                cartList.innerHTML += cartItem;
+            });
+
+            // Menambahkan event listener untuk tombol hapus item
+            document.querySelectorAll('.remove-item').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const index = e.target.getAttribute('data-index');
+                    removeFromCart(index);
+                });
+            });
+        }
+
+        // Menghapus item dari keranjang
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            renderCart();
+            updateCartCount();
+        }
+
+        // Update jumlah keranjang
+        function updateCartCount() {
+            document.getElementById('cart').innerHTML = `<i class="fas fa-shopping-cart"></i> (${cart.length})`;
+        }
+    </script>
+</body>
+</html>
